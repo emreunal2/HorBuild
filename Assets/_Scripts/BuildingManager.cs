@@ -1,14 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BuildingManager : MonoBehaviour
 {
     private Camera mainCamera;
-
+    
     [SerializeField] BuildingTypeListSO buildingTypeList;
     [SerializeField] private BuildingTypeSO selectedBuildingType;
 
+    public static BuildingManager Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
         mainCamera = Camera.main;
@@ -17,13 +32,13 @@ public class BuildingManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SelectBuildingType(0);
+            SelectBuildingType(buildingTypeList.BuildingTypeList[0]);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SelectBuildingType(1);
+            SelectBuildingType(buildingTypeList.BuildingTypeList[1]);
         }
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             Instantiate(selectedBuildingType.Prefab, GetMouseWorldPosition(), Quaternion.identity);
         }
@@ -37,8 +52,8 @@ public class BuildingManager : MonoBehaviour
         return mouseWorldPosition;
     }
 
-    void SelectBuildingType(int index) 
+    public void SelectBuildingType(BuildingTypeSO buildingType) 
     {
-        selectedBuildingType = buildingTypeList.BuildingTypeList[index];
+        selectedBuildingType = buildingType;
     }
 }
