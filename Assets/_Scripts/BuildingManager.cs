@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,9 @@ public class BuildingManager : MonoBehaviour
 
     public static BuildingManager Instance;
 
+    public BuildingTypeSO SelectedBuildingType { get => selectedBuildingType; set => selectedBuildingType = value; }
+
+    public event Action OnActiveBuildingChange;
     private void Awake()
     {
         if (Instance == null)
@@ -27,33 +31,40 @@ public class BuildingManager : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
+
     }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SelectBuildingType(buildingTypeList.BuildingTypeList[0]);
+            BuildsUI.Instance.UpdateSelected(buildingTypeList.BuildingTypeList[0]);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             SelectBuildingType(buildingTypeList.BuildingTypeList[1]);
+            BuildsUI.Instance.UpdateSelected(buildingTypeList.BuildingTypeList[1]);
         }
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+
+
+        if (selectedBuildingType != null && Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            Instantiate(selectedBuildingType.Prefab, GetMouseWorldPosition(), Quaternion.identity);
+            
+            Instantiate(selectedBuildingType.Prefab, Utils.GetMouseWorldPosition(), Quaternion.identity);
+        }
+        if(Input.GetMouseButtonDown(1))
+        {
+            SelectBuildingType(null);
         }
 
     }
 
-    Vector3 GetMouseWorldPosition() 
-    {
-        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPosition.z = 0f;
-        return mouseWorldPosition;
-    }
 
-    public void SelectBuildingType(BuildingTypeSO buildingType) 
+
+    public void SelectBuildingType(BuildingTypeSO buildingType)
     {
         selectedBuildingType = buildingType;
+        OnActiveBuildingChange?.Invoke();
     }
+
 }
