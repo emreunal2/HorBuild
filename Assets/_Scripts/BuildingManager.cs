@@ -10,6 +10,9 @@ public class BuildingManager : MonoBehaviour
     
     [SerializeField] BuildingTypeListSO buildingTypeList;
     [SerializeField] private BuildingTypeSO selectedBuildingType;
+    [SerializeField] Grid grid;
+    [SerializeField] GameObject highlight;
+    [SerializeField] GridData placedBuildings;
 
     public static BuildingManager Instance;
 
@@ -31,9 +34,53 @@ public class BuildingManager : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-
+        placedBuildings = new GridData();
     }
     void Update()
+    {
+        Vector3Int activeGrid = grid.WorldToCell(Utils.GetMouseWorldPosition());
+        highlight.GetComponent<Transform>().position = grid.CellToWorld(activeGrid);
+        Debug.Log(activeGrid);
+        ActiveBuildingInput();
+        if (selectedBuildingType != null)
+        {
+
+            bool placementValidity = CheckPlacementValidity(activeGrid, selectedBuildingType);
+            highlight.GetComponent<SpriteRenderer>().color = placementValidity ? Color.white : Color.red;
+
+            if (placementValidity)
+            {
+                PlaceBuilding(activeGrid);
+            }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            SelectBuildingType(null);
+        }
+    }
+
+    private bool CheckPlacementValidity(Vector3Int activeGrid, BuildingTypeSO selectedBuildingType)
+    {
+        return placedBuildings.CanPlaceObjectAt(activeGrid, selectedBuildingType.Size);        
+    }
+
+    private void PlaceBuilding(Vector3Int activeGrid)
+    {
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && ResourceManager.Instance.CanAfford(selectedBuildingType.BuildingResourceAmounts))
+        {
+            ResourceManager.Instance.SpendResource(selectedBuildingType.BuildingResourceAmounts);
+            Instantiate(selectedBuildingType.Prefab, grid.CellToWorld(activeGrid), Quaternion.identity);
+            placedBuildings.AddObjectAt(activeGrid, selectedBuildingType.Size, selectedBuildingType.Id, 0);
+        }
+    }
+
+    public void SelectBuildingType(BuildingTypeSO buildingType)
+    {
+        selectedBuildingType = buildingType;
+        OnActiveBuildingChange?.Invoke();
+    }
+
+    void ActiveBuildingInput()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -45,26 +92,6 @@ public class BuildingManager : MonoBehaviour
             SelectBuildingType(buildingTypeList.BuildingTypeList[1]);
             BuildsUI.Instance.UpdateSelected(buildingTypeList.BuildingTypeList[1]);
         }
-
-
-        if (selectedBuildingType != null && Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-        {
-            
-            Instantiate(selectedBuildingType.Prefab, Utils.GetMouseWorldPosition(), Quaternion.identity);
-        }
-        if(Input.GetMouseButtonDown(1))
-        {
-            SelectBuildingType(null);
-        }
-
-    }
-
-
-
-    public void SelectBuildingType(BuildingTypeSO buildingType)
-    {
-        selectedBuildingType = buildingType;
-        OnActiveBuildingChange?.Invoke();
     }
 
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class BuildingResourceAmount
 {
-    [SerializeField] ResourceTypeSO resourceType;
-    [SerializeField] int amount;
+    public ResourceTypeSO resourceType;
+    public int amount;
 }
 

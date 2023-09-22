@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: Tst
   prefab: {fileID: 7599160949918243193, guid: eea6be0ea8ea8484589e3d659954a3a9, type: 3}
+  buildingResourceAmounts: []
+  id: 0
+  size: {x: 1, y: 1}
