@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class HealthSystem : MonoBehaviour
 {
-    [SerializeField] int maxHealth;
-    [SerializeField] int currentHealth;
+    [SerializeField] float maxHealth;
+    [SerializeField] float currentHealth;
     void Start()
     {
         currentHealth = maxHealth;
@@ -14,15 +14,19 @@ public class HealthSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            TakeDamege(10);
+        }
     }
 
-    private void TakeDamege(int amount)
+    public void TakeDamege(float amount)
     {
         currentHealth -= amount;
         if (currentHealth < 0)
         {
-            Destroy(gameObject);
+            IDestroyable destroyable = gameObject.GetComponent<IDestroyable>();
+            destroyable.DestroyObject();
         }
     }
 

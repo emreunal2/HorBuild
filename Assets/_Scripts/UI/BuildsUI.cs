@@ -29,7 +29,6 @@ public class BuildsUI : MonoBehaviour
             buildingObject.gameObject.SetActive(true);
             buildingObject.Find("image").GetComponent<Image>().sprite = buildingTypeList.BuildingTypeList[i].Prefab.GetComponent<SpriteRenderer>().sprite;
             buildingTypeTransform[buildingType] = buildingObject;
-            Debug.Log(i);
             buildingObject.GetComponent<Button>().onClick.AddListener(() =>
             {
                 BuildingManager.Instance.SelectBuildingType(buildingType);

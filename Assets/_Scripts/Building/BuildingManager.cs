@@ -40,7 +40,6 @@ public class BuildingManager : MonoBehaviour
     {
         Vector3Int activeGrid = grid.WorldToCell(Utils.GetMouseWorldPosition());
         highlight.GetComponent<Transform>().position = grid.CellToWorld(activeGrid);
-        Debug.Log(activeGrid);
         ActiveBuildingInput();
         if (selectedBuildingType != null)
         {
